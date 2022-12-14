@@ -3,14 +3,32 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_scanner_sqlite/main.dart';
 
 class CustomNavigationBar extends StatelessWidget {
+
+
+  
   const CustomNavigationBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
+    
+
     return BlocBuilder<PageCubit, int>(
-      builder: (_, index) => BottomNavigationBar(
-        currentIndex: index,
+      builder: (_, index) { 
+
+         int currentIndex; 
+
+          if(index == 2) {
+            currentIndex = 0;
+          } else {
+            currentIndex = index;
+          }
+         
+
+         
+
+        return BottomNavigationBar(
+        currentIndex: currentIndex,
         elevation: 0,
         onTap: (indice) => context.read<PageCubit>().changePage(indice),
         items: const <BottomNavigationBarItem>[
@@ -23,7 +41,8 @@ class CustomNavigationBar extends StatelessWidget {
             label: 'Direcciones',  
           ),
         ],
-      ),
-    );
-  }
+      );
+      }
+      );
+    }
 }

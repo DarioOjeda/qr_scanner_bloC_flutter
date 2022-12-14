@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_scanner_sqlite/pages/direcciones_page.dart';
 import 'package:qr_scanner_sqlite/pages/mapas_pages.dart';
+import 'package:qr_scanner_sqlite/pages/qr_page.dart';
 import 'package:qr_scanner_sqlite/widgets/custom_navigationbar.dart';
 import 'package:qr_scanner_sqlite/widgets/scan_button.dart';
 
@@ -47,6 +48,9 @@ class _HomePageBody extends StatelessWidget {
 
           case 1:
             return const DireccionesPage();  
+
+          case 2:
+            return const QRPage(); 
 
           default:
             return const MapasPage();

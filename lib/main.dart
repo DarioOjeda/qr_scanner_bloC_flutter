@@ -1,9 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:qr_scanner_sqlite/models/scan_model.dart';
 import 'package:qr_scanner_sqlite/pages/home_page.dart';
 import 'package:qr_scanner_sqlite/pages/mapa_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qr_scanner_sqlite/repositories/database/database_repository.dart';
+import 'package:qr_scanner_sqlite/repositories/database/sqflite_database_repository.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
-void main() { 
+Future<void> main() async{ 
+  await SqfliteDatabaseRepository.init();
   runApp(MyApp());
 }
 
@@ -12,8 +21,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     return BlocProvider(
-      create: (_) => PageCubit(),
+     return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) { return PageCubit(); }),
+        BlocProvider(create: (_) => ScannerCubit(databaseRepository: SqfliteDatabaseRepository()))
+      ],
       child: AppView(),
     );
   }
@@ -62,4 +74,41 @@ class PageCubit extends Cubit<int> {
   void changePage(int page) => emit(page);
   
 }
+
+class ScannerCubit extends Cubit<ScannerState> {
+  ScannerCubit({required DatabaseRepository databaseRepository}): 
+        _databaseRepository = databaseRepository,
+        super(ScannerState());
+  
+  final DatabaseRepository _databaseRepository;
+  
+  Future<void> load() async{
+    final result = await _databaseRepository.loadAllScanner();
+
+    emit(state.updateScannerList(result));
+  }
+
+  Future<void> insert(String tipo, String valor) async{
+    await _databaseRepository.insertNewValue(tipo, valor);
+    final result = await _databaseRepository.loadAllScanner();
+    
+    emit(state.updateScannerList(result));
+  }
+  
+}
+
+class ScannerState {
+  final List<ScanModel> scannerList;
+
+  ScannerState({ this.scannerList = const <ScanModel>[]});
+
+  ScannerState updateScannerList(List<ScanModel> lista) {
+    return ScannerState(scannerList: lista);
+  }
+}
+
+
+
+
+
 
